@@ -22,3 +22,12 @@ jobs:
         with:
           version: 0.15.2
       - run: zig build test
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.15.2
+      - run: zig build docs
