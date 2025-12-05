@@ -11,6 +11,11 @@ comptime {
     std.debug.assert(@sizeOf(c.GC_word) == @sizeOf(usize));
 }
 
+pub const allocator = @import("./allocator.zig").allocator;
+pub const allocator_uncollectable = @import("./allocator.zig").allocator_uncollectable;
+pub const allocator_atomic = @import("./allocator.zig").allocator_atomic;
+pub const allocator_atomic_uncollectable = @import("./allocator.zig").allocator_atomic_uncollectable;
+
 pub const version: std.SemanticVersion = .{
     .major = c.GC_VERSION_MAJOR,
     .minor = c.GC_VERSION_MINOR,
@@ -150,6 +155,15 @@ pub fn startMarkThreads() void {
     c.GC_start_mark_threads();
 }
 
+// NOTE: Because re-initializing the GC after `deinit()` is not guaranteed to work none of these tests call it.
+
+test {
+    _ = allocator;
+    _ = allocator_uncollectable;
+    _ = allocator_atomic;
+    _ = allocator_atomic_uncollectable;
+}
+
 test version {
     const expected_version: std.SemanticVersion = .{
         .major = 8,
@@ -157,14 +171,6 @@ test version {
         .patch = 0,
     };
     try std.testing.expectEqual(expected_version, version);
-}
-
-// NOTE: Because re-initializing the GC after `deinit()` is not guaranteed to work none of these tests call it.
-
-test init {
-    try std.testing.expect(!isInitCalled());
-    init();
-    try std.testing.expect(isInitCalled());
 }
 
 test malloc {

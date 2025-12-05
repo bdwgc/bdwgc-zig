@@ -33,8 +33,7 @@ pub fn main() !void {
     bdwgc.init();
     defer bdwgc.deinit();
 
-    // TODO: Implement allocator interface
-    const ptr = try bdwgc.malloc(100);
-    std.debug.print("ptr: {*}\n", .{ptr});
+    const bytes = try bdwgc.allocator_atomic.alloc(u8, 100);
+    std.debug.print("bytes: {*}\n", .{bytes});
 }
 ```
