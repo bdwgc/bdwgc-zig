@@ -122,6 +122,34 @@ pub fn getProfStats() ProfStats {
     };
 }
 
+pub fn getMemoryUse() usize {
+    return c.GC_get_memory_use();
+}
+
+pub fn disable() void {
+    c.GC_disable();
+}
+
+pub fn isDisabled() bool {
+    return c.GC_is_disabled() != 0;
+}
+
+pub fn enable() void {
+    c.GC_enable();
+}
+
+pub fn enableIncremental() void {
+    c.GC_enable_incremental();
+}
+
+pub fn isIncrementalMode() bool {
+    return c.GC_is_incremental_mode() != 0;
+}
+
+pub fn startMarkThreads() void {
+    c.GC_start_mark_threads();
+}
+
 test version {
     const expected_version: std.SemanticVersion = .{
         .major = 8,
@@ -246,4 +274,21 @@ test getProfStats {
     try std.testing.expect(stats.reclaimed_bytes_before_gc >= 0);
     try std.testing.expect(stats.expl_freed_bytes_since_gc >= 1000);
     try std.testing.expect(stats.obtained_from_os_bytes >= 1000);
+}
+
+test getMemoryUse {
+    init();
+    const ptr = try malloc(1000);
+    defer free(ptr);
+    const memory_use = getMemoryUse();
+    try std.testing.expect(memory_use >= 1000);
+}
+
+test disable {
+    init();
+    try std.testing.expect(!isDisabled());
+    disable();
+    try std.testing.expect(isDisabled());
+    enable();
+    try std.testing.expect(!isDisabled());
 }
