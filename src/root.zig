@@ -1,4 +1,4 @@
-//! Zig language bindings for the Boehm-Demers-Weiser Garbage Collector (bdwgc).
+//! Zig language bindings for the [Boehm-Demers-Weiser Garbage Collector](https://github.com/bdwgc/bdwgc) (bdwgc).
 //!
 //! See [`gc.h`](https://github.com/bdwgc/bdwgc/blob/master/include/gc/gc.h) for documentation of the functions.
 
