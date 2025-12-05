@@ -23,7 +23,7 @@ jobs:
           version: 0.15.2
       - run: zig build test
 
-  docs:
+  build-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -31,3 +31,19 @@ jobs:
         with:
           version: 0.15.2
       - run: zig build docs
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: zig-out/docs
+
+  deploy-docs:
+    needs: [build-docs]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
