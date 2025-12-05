@@ -6,6 +6,11 @@ const std = @import("std");
 
 const c = @import("./c.zig").c;
 
+comptime {
+    // Ensure we can use `usize` in place of `GC_word` for Zig wrappers.
+    std.debug.assert(@sizeOf(c.GC_word) == @sizeOf(usize));
+}
+
 pub const version: std.SemanticVersion = .{
     .major = c.GC_VERSION_MAJOR,
     .minor = c.GC_VERSION_MINOR,
@@ -83,20 +88,19 @@ pub fn gcollectAndUnmap() void {
     c.GC_gcollect_and_unmap();
 }
 
-// `GC_word` is `c_ulong` so we use `u64` for portability.
 pub const ProfStats = struct {
-    heapsize_full: u64,
-    free_bytes_full: u64,
-    unmapped_bytes: u64,
-    bytes_allocd_since_gc: u64,
-    allocd_bytes_before_gc: u64,
-    non_gc_bytes: u64,
-    gc_no: u64,
-    markers_m1: u64,
-    bytes_reclaimed_since_gc: u64,
-    reclaimed_bytes_before_gc: u64,
-    expl_freed_bytes_since_gc: u64,
-    obtained_from_os_bytes: u64,
+    heapsize_full: usize,
+    free_bytes_full: usize,
+    unmapped_bytes: usize,
+    bytes_allocd_since_gc: usize,
+    allocd_bytes_before_gc: usize,
+    non_gc_bytes: usize,
+    gc_no: usize,
+    markers_m1: usize,
+    bytes_reclaimed_since_gc: usize,
+    reclaimed_bytes_before_gc: usize,
+    expl_freed_bytes_since_gc: usize,
+    obtained_from_os_bytes: usize,
 };
 
 pub fn getProfStats() ProfStats {
