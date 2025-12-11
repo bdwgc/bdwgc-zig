@@ -158,10 +158,7 @@ pub fn startMarkThreads() void {
 // NOTE: Because re-initializing the GC after `deinit()` is not guaranteed to work none of these tests call it.
 
 test {
-    _ = allocator;
-    _ = allocator_uncollectable;
-    _ = allocator_atomic;
-    _ = allocator_atomic_uncollectable;
+    _ = @import("./allocator.zig");
 }
 
 test version {

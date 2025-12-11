@@ -2,6 +2,8 @@
 
 const std = @import("std");
 
+const build_options = @import("build_options");
+
 const c = @import("./c.zig").c;
 
 const Options = struct {
@@ -42,7 +44,7 @@ pub const allocator_atomic: std.mem.Allocator = .{
     .vtable = &vtable,
 };
 
-pub const allocator_atomic_uncollectable: std.mem.Allocator = .{
+pub const allocator_atomic_uncollectable: std.mem.Allocator = if (build_options.enable_atomic_uncollectable) .{
     .ptr = blk: {
         const options: Options = .{
             .atomic = true,
@@ -51,7 +53,7 @@ pub const allocator_atomic_uncollectable: std.mem.Allocator = .{
         break :blk @constCast(&options);
     },
     .vtable = &vtable,
-};
+} else @compileError("Requires enable_atomic_uncollectable option");
 
 // NOTE: This is largely adapted from `std.heap.c_allocator`, excluding the `posix_memalign`
 //       code paths because bdwgc does not offer an atomic variant of it.
@@ -93,7 +95,7 @@ fn alloc(
         },
         true => switch (options.uncollectable) {
             false => &c.GC_malloc_atomic,
-            true => &c.GC_malloc_atomic_uncollectable,
+            true => if (build_options.enable_atomic_uncollectable) &c.GC_malloc_atomic_uncollectable else unreachable,
         },
     };
     switch (allocStrat(alignment)) {
@@ -201,6 +203,7 @@ test allocator_atomic {
 }
 
 test allocator_atomic_uncollectable {
+    if (!build_options.enable_atomic_uncollectable) return error.SkipZigTest;
     c.GC_init();
     try std.heap.testAllocator(allocator_atomic_uncollectable);
     try std.heap.testAllocatorAligned(allocator_atomic_uncollectable);
