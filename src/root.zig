@@ -4,6 +4,8 @@
 
 const std = @import("std");
 
+const build_options = @import("build_options");
+
 pub const c = @import("./c.zig").c;
 
 comptime {
@@ -155,6 +157,36 @@ pub fn startMarkThreads() void {
     c.GC_start_mark_threads();
 }
 
+pub fn setPointerMask(value: usize) void {
+    if (!build_options.enable_dynamic_pointer_mask) {
+        @compileError("Requires enable_dynamic_pointer_mask option");
+    }
+    c.GC_set_pointer_mask(value);
+}
+
+pub fn getPointerMask() usize {
+    if (!build_options.enable_dynamic_pointer_mask) {
+        @compileError("Requires enable_dynamic_pointer_mask option");
+    }
+    return c.GC_get_pointer_mask();
+}
+
+const ShiftType = std.math.Log2Int(usize);
+
+pub fn setPointerShift(value: ShiftType) void {
+    if (!build_options.enable_dynamic_pointer_mask) {
+        @compileError("Requires enable_dynamic_pointer_mask option");
+    }
+    c.GC_set_pointer_shift(value);
+}
+
+pub fn getPointerShift() ShiftType {
+    if (!build_options.enable_dynamic_pointer_mask) {
+        @compileError("Requires enable_dynamic_pointer_mask option");
+    }
+    return @intCast(c.GC_get_pointer_shift());
+}
+
 // NOTE: Because re-initializing the GC after `deinit()` is not guaranteed to work none of these tests call it.
 
 test {
@@ -294,4 +326,24 @@ test disable {
     try std.testing.expect(isDisabled());
     enable();
     try std.testing.expect(!isDisabled());
+}
+
+test setPointerMask {
+    if (!build_options.enable_dynamic_pointer_mask) return error.SkipZigTest;
+    init();
+    try std.testing.expectEqual(std.math.maxInt(usize), getPointerMask());
+    setPointerMask(0xffff);
+    try std.testing.expectEqual(0xffff, getPointerMask());
+    setPointerMask(std.math.maxInt(usize));
+    try std.testing.expectEqual(std.math.maxInt(usize), getPointerMask());
+}
+
+test setPointerShift {
+    if (!build_options.enable_dynamic_pointer_mask) return error.SkipZigTest;
+    init();
+    try std.testing.expectEqual(0, getPointerShift());
+    setPointerShift(4);
+    try std.testing.expectEqual(4, getPointerShift());
+    setPointerShift(0);
+    try std.testing.expectEqual(0, getPointerShift());
 }

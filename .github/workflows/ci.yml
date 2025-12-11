@@ -21,7 +21,10 @@ jobs:
       - uses: mlugg/setup-zig@v2
         with:
           version: 0.15.2
-      - run: zig build test
+      - name: "zig build test"
+        run: |
+          zig build test \
+            -Denable_dynamic_pointer_mask=true
 
   build-docs:
     runs-on: ubuntu-latest

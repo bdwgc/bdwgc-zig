@@ -87,6 +87,7 @@ pub fn build(b: *std.Build) void {
 
     const options = b.addOptions();
     options.addOption(bool, "enable_atomic_uncollectable", enable_atomic_uncollectable);
+    options.addOption(bool, "enable_dynamic_pointer_mask", enable_dynamic_pointer_mask);
 
     const module = b.addModule("bdwgc", .{
         .root_source_file = b.path("src/root.zig"),
