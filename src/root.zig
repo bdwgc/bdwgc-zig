@@ -187,6 +187,25 @@ pub fn getPointerShift() ShiftType {
     return @intCast(c.GC_get_pointer_shift());
 }
 
+pub const RegisterDisappearingLinkError = error{ OutOfMemory, DuplicateLink };
+
+pub fn registerDisappearingLink(link: *?*anyopaque, object: *const anyopaque) RegisterDisappearingLinkError!void {
+    // `GC_register_disappearing_link` only exists for backwards compatibility and suggests to use
+    // `GC_general_register_disappearing_link` instead, hence the naming mismatch.
+    const status = c.GC_general_register_disappearing_link(link, object);
+    switch (status) {
+        // No-op in find-leak mode
+        c.GC_SUCCESS, c.GC_UNIMPLEMENTED => {},
+        c.GC_DUPLICATE => return error.DuplicateLink,
+        c.GC_NO_MEMORY => return error.OutOfMemory,
+        else => unreachable,
+    }
+}
+
+pub fn unregisterDisappearingLink(link: *?*anyopaque) bool {
+    return c.GC_unregister_disappearing_link(link) != 0;
+}
+
 // NOTE: Because re-initializing the GC after `deinit()` is not guaranteed to work none of these tests call it.
 
 test {
@@ -346,4 +365,32 @@ test setPointerShift {
     try std.testing.expectEqual(4, getPointerShift());
     setPointerShift(0);
     try std.testing.expectEqual(0, getPointerShift());
+}
+
+test registerDisappearingLink {
+    init();
+    const ptr = try malloc(100);
+    defer free(ptr);
+
+    var weak_ptr: ?*anyopaque = ptr;
+    try registerDisappearingLink(&weak_ptr, ptr);
+    try std.testing.expect(weak_ptr != null);
+    // We can not test the unlink behavior:
+    // "Explicit deallocation of `obj` may or may not cause `link` to eventually be cleared."
+
+    // Weird: This segfaults when inlining the call into expectError() but works fine like this. Zig bug?
+    const err = registerDisappearingLink(&weak_ptr, ptr);
+    try std.testing.expectError(error.DuplicateLink, err);
+}
+
+test unregisterDisappearingLink {
+    init();
+    const ptr = try malloc(100);
+    defer free(ptr);
+
+    var weak_ptr: ?*anyopaque = ptr;
+    try std.testing.expect(!unregisterDisappearingLink(&weak_ptr));
+    try registerDisappearingLink(&weak_ptr, ptr);
+    try std.testing.expect(unregisterDisappearingLink(&weak_ptr));
+    try std.testing.expect(!unregisterDisappearingLink(&weak_ptr));
 }
