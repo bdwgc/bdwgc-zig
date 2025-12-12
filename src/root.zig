@@ -196,8 +196,8 @@ pub const FinalizerAndData = struct {
 
 pub fn registerFinalizer(
     object: *anyopaque,
-    data: ?*anyopaque,
     finalizer: Finalizer,
+    data: ?*anyopaque,
 ) ?FinalizerAndData {
     var old_finalizer: ?Finalizer = null;
     var old_data: ?*anyopaque = null;
@@ -409,11 +409,11 @@ test registerFinalizer {
     }.finalizer;
 
     {
-        const old = registerFinalizer(ptr, null, finalizer);
+        const old = registerFinalizer(ptr, finalizer, null);
         try std.testing.expect(old == null);
     }
     {
-        const old = registerFinalizer(ptr, null, finalizer);
+        const old = registerFinalizer(ptr, finalizer, null);
         try std.testing.expect(old.?.finalizer == finalizer);
         try std.testing.expect(old.?.data == null);
     }
@@ -431,7 +431,7 @@ test unregisterFinalizer {
         fn finalizer(_: *anyopaque, _: ?*anyopaque) callconv(.c) void {}
     }.finalizer;
 
-    _ = registerFinalizer(ptr, null, finalizer);
+    _ = registerFinalizer(ptr, finalizer, null);
     {
         const old = unregisterFinalizer(ptr);
         try std.testing.expect(old.?.finalizer == finalizer);
