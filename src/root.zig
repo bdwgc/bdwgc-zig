@@ -187,6 +187,38 @@ pub fn getPointerShift() ShiftType {
     return @intCast(c.GC_get_pointer_shift());
 }
 
+pub const Finalizer = *const fn (object: *anyopaque, data: ?*anyopaque) callconv(.c) void;
+
+pub const FinalizerAndData = struct {
+    finalizer: Finalizer,
+    data: ?*anyopaque,
+};
+
+pub fn registerFinalizer(
+    object: *anyopaque,
+    data: ?*anyopaque,
+    finalizer: Finalizer,
+) ?FinalizerAndData {
+    var old_finalizer: ?Finalizer = null;
+    var old_data: ?*anyopaque = null;
+    // @ptrCast() to allow typing the `object` parameter as non-null. Not 100% sure if this is safe.
+    c.GC_register_finalizer(object, @ptrCast(finalizer), data, &old_finalizer, &old_data);
+    if (old_finalizer != null) {
+        return .{ .finalizer = old_finalizer.?, .data = old_data };
+    }
+    return null;
+}
+
+pub fn unregisterFinalizer(object: *anyopaque) ?FinalizerAndData {
+    var old_finalizer: ?Finalizer = null;
+    var old_data: ?*anyopaque = null;
+    c.GC_register_finalizer(object, null, null, &old_finalizer, &old_data);
+    if (old_finalizer != null) {
+        return .{ .finalizer = old_finalizer.?, .data = old_data };
+    }
+    return null;
+}
+
 pub const RegisterDisappearingLinkError = error{ OutOfMemory, DuplicateLink };
 
 pub fn registerDisappearingLink(link: *?*anyopaque, object: *const anyopaque) RegisterDisappearingLinkError!void {
@@ -365,6 +397,50 @@ test setPointerShift {
     try std.testing.expectEqual(4, getPointerShift());
     setPointerShift(0);
     try std.testing.expectEqual(0, getPointerShift());
+}
+
+test registerFinalizer {
+    init();
+    const ptr = try malloc(100);
+    defer free(ptr);
+
+    const finalizer = struct {
+        fn finalizer(_: *anyopaque, _: ?*anyopaque) callconv(.c) void {}
+    }.finalizer;
+
+    {
+        const old = registerFinalizer(ptr, null, finalizer);
+        try std.testing.expect(old == null);
+    }
+    {
+        const old = registerFinalizer(ptr, null, finalizer);
+        try std.testing.expect(old.?.finalizer == finalizer);
+        try std.testing.expect(old.?.data == null);
+    }
+
+    // Not unregistering the finalizer may cause the next test to fail if the same `ptr` is reused
+    _ = unregisterFinalizer(ptr);
+}
+
+test unregisterFinalizer {
+    init();
+    const ptr = try malloc(100);
+    defer free(ptr);
+
+    const finalizer = struct {
+        fn finalizer(_: *anyopaque, _: ?*anyopaque) callconv(.c) void {}
+    }.finalizer;
+
+    _ = registerFinalizer(ptr, null, finalizer);
+    {
+        const old = unregisterFinalizer(ptr);
+        try std.testing.expect(old.?.finalizer == finalizer);
+        try std.testing.expect(old.?.data == null);
+    }
+    {
+        const old = unregisterFinalizer(ptr);
+        try std.testing.expect(old == null);
+    }
 }
 
 test registerDisappearingLink {
