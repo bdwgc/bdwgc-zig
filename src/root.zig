@@ -26,7 +26,6 @@ pub const version: std.SemanticVersion = .{
 
 pub fn init() void {
     c.GC_init();
-    c.GC_set_warn_proc(c.GC_ignore_warn_proc);
 }
 
 pub fn isInitCalled() bool {
@@ -35,6 +34,10 @@ pub fn isInitCalled() bool {
 
 pub fn deinit() void {
     c.GC_deinit();
+}
+
+pub fn disableWarnings() void {
+    c.GC_set_warn_proc(c.GC_ignore_warn_proc);
 }
 
 pub fn malloc(size_in_bytes: usize) error{OutOfMemory}!*anyopaque {
@@ -255,6 +258,7 @@ test version {
 
 test malloc {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
     try std.testing.expect(@intFromPtr(ptr) != 0);
@@ -262,6 +266,7 @@ test malloc {
 
 test mallocAtomic {
     init();
+    disableWarnings();
     const ptr = try mallocAtomic(100);
     defer free(ptr);
     try std.testing.expect(@intFromPtr(ptr) != 0);
@@ -269,6 +274,7 @@ test mallocAtomic {
 
 test mallocUncollectable {
     init();
+    disableWarnings();
     const ptr = try mallocUncollectable(100);
     defer free(ptr);
     try std.testing.expect(@intFromPtr(ptr) != 0);
@@ -276,6 +282,7 @@ test mallocUncollectable {
 
 test strdup {
     init();
+    disableWarnings();
     const original = "Hello, World!";
     const duplicated = try strdup(original);
     defer free(duplicated);
@@ -284,6 +291,7 @@ test strdup {
 
 test strndup {
     init();
+    disableWarnings();
     const original = "Hello, World!";
     const duplicated = try strndup(original, 5);
     defer free(duplicated);
@@ -292,6 +300,7 @@ test strndup {
 
 test memalign {
     init();
+    disableWarnings();
     const alignment: std.mem.Alignment = .@"16";
     const ptr = try memalign(alignment, 100);
     defer free(ptr);
@@ -300,6 +309,7 @@ test memalign {
 
 test base {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
     try std.testing.expectEqual(ptr, base(ptr));
@@ -309,6 +319,7 @@ test base {
 
 test isHeapPointer {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
     try std.testing.expect(isHeapPointer(ptr));
@@ -319,6 +330,7 @@ test isHeapPointer {
 
 test size {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
     try std.testing.expect(size(ptr) >= 100);
@@ -326,6 +338,7 @@ test size {
 
 test setMaxHeapSize {
     init();
+    disableWarnings();
     // Needs to be bigger than the current heap size
     setMaxHeapSize(@enumFromInt(100_000));
     defer setMaxHeapSize(.unbounded);
@@ -334,16 +347,19 @@ test setMaxHeapSize {
 
 test gcollect {
     init();
+    disableWarnings();
     gcollect();
 }
 
 test gcollectAndUnmap {
     init();
+    disableWarnings();
     gcollectAndUnmap();
 }
 
 test getProfStats {
     init();
+    disableWarnings();
     const ptr = try malloc(1000);
     gcollect();
     free(ptr);
@@ -364,6 +380,7 @@ test getProfStats {
 
 test getMemoryUse {
     init();
+    disableWarnings();
     const ptr = try malloc(1000);
     defer free(ptr);
     const memory_use = getMemoryUse();
@@ -372,6 +389,7 @@ test getMemoryUse {
 
 test disable {
     init();
+    disableWarnings();
     try std.testing.expect(!isDisabled());
     disable();
     try std.testing.expect(isDisabled());
@@ -401,6 +419,7 @@ test setPointerShift {
 
 test registerFinalizer {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
 
@@ -424,6 +443,7 @@ test registerFinalizer {
 
 test unregisterFinalizer {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
 
@@ -445,6 +465,7 @@ test unregisterFinalizer {
 
 test registerDisappearingLink {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
 
@@ -461,6 +482,7 @@ test registerDisappearingLink {
 
 test unregisterDisappearingLink {
     init();
+    disableWarnings();
     const ptr = try malloc(100);
     defer free(ptr);
 
