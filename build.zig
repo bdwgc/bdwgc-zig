@@ -24,6 +24,7 @@ pub fn build(b: *std.Build) void {
     const enable_java_finalization = b.option(bool, "enable_java_finalization", "Support for java finalization") orelse true;
     const enable_atomic_uncollectable = b.option(bool, "enable_atomic_uncollectable", "Support for atomic uncollectible allocation") orelse true;
     const enable_redirect_malloc = b.option(bool, "enable_redirect_malloc", "Redirect malloc and friend to GC routines") orelse false;
+    const enable_uncollectable_redirection = b.option(bool, "enable_uncollectable_redirection", "Redirect to uncollectible malloc instead of garbage-collected one") orelse false;
     const enable_disclaim = b.option(bool, "enable_disclaim", "Support alternative finalization interface") orelse true;
     const enable_dynamic_pointer_mask = b.option(bool, "enable_dynamic_pointer_mask", "Support pointer mask/shift set at runtime") orelse false;
     const enable_large_config = b.option(bool, "enable_large_config", "Optimize for large heap or root set") orelse false;
@@ -61,6 +62,7 @@ pub fn build(b: *std.Build) void {
         .enable_java_finalization = enable_java_finalization,
         .enable_atomic_uncollectable = enable_atomic_uncollectable,
         .enable_redirect_malloc = enable_redirect_malloc,
+        .enable_uncollectable_redirection = enable_uncollectable_redirection,
         .enable_disclaim = enable_disclaim,
         .enable_dynamic_pointer_mask = enable_dynamic_pointer_mask,
         .enable_large_config = enable_large_config,
