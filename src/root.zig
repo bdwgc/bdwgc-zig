@@ -478,6 +478,9 @@ test registerDisappearingLink {
     // Weird: This segfaults when inlining the call into expectError() but works fine like this. Zig bug?
     const err = registerDisappearingLink(&weak_ptr, ptr);
     try std.testing.expectError(error.DuplicateLink, err);
+
+    // Not unregistering the disappearing link may cause the next test to fail if the same `ptr` is reused
+    _ = unregisterDisappearingLink(&weak_ptr);
 }
 
 test unregisterDisappearingLink {
