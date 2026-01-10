@@ -205,7 +205,7 @@ pub fn registerFinalizer(
     var old_finalizer: ?Finalizer = null;
     var old_data: ?*anyopaque = null;
     // @ptrCast() to allow typing the `object` parameter as non-null. Not 100% sure if this is safe.
-    c.GC_register_finalizer(object, @ptrCast(finalizer), data, &old_finalizer, &old_data);
+    c.GC_register_finalizer(object, @ptrCast(finalizer), data, @ptrCast(&old_finalizer), &old_data);
     if (old_finalizer != null) {
         return .{ .finalizer = old_finalizer.?, .data = old_data };
     }
@@ -215,7 +215,7 @@ pub fn registerFinalizer(
 pub fn unregisterFinalizer(object: *anyopaque) ?FinalizerAndData {
     var old_finalizer: ?Finalizer = null;
     var old_data: ?*anyopaque = null;
-    c.GC_register_finalizer(object, null, null, &old_finalizer, &old_data);
+    c.GC_register_finalizer(object, null, null, @ptrCast(&old_finalizer), &old_data);
     if (old_finalizer != null) {
         return .{ .finalizer = old_finalizer.?, .data = old_data };
     }
