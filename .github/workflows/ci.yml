@@ -34,7 +34,7 @@ jobs:
         with:
           version: 0.15.2
       - run: zig build docs
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: zig-out/docs
 
@@ -49,5 +49,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
         id: deployment
