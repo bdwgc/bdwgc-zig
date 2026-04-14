@@ -4,7 +4,7 @@ const std = @import("std");
 
 const build_options = @import("build_options");
 
-const c = @import("./c.zig").c;
+const c = @import("c");
 
 const Options = struct {
     atomic: bool,

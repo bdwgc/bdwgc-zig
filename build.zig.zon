@@ -2,7 +2,7 @@
     .name = .bdwgc_zig,
     .version = "0.1.0",
     .fingerprint = 0x8f7019708104f77d, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.15.2",
+    .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .bdwgc = .{
             .url = "git+https://github.com/bdwgc/bdwgc#370781b86b66f4c20f2a9af51d4409697c9f2057",

@@ -6,7 +6,7 @@ const std = @import("std");
 
 const build_options = @import("build_options");
 
-pub const c = @import("./c.zig").c;
+pub const c = @import("c");
 
 comptime {
     // Ensure we can use `usize` in place of `GC_word` for Zig wrappers.

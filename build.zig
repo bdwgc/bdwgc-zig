@@ -87,6 +87,13 @@ pub fn build(b: *std.Build) void {
         }
     }
 
+    const translate_c = b.addTranslateC(.{
+        .root_source_file = b.path("src/c.h"),
+        .target = target,
+        .optimize = optimize,
+    });
+    translate_c.addIncludePath(bdwgc.path("include"));
+
     const options = b.addOptions();
     options.addOption(bool, "enable_atomic_uncollectable", enable_atomic_uncollectable);
     options.addOption(bool, "enable_dynamic_pointer_mask", enable_dynamic_pointer_mask);
@@ -97,6 +104,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .imports = &.{
             .{ .name = "build_options", .module = options.createModule() },
+            .{ .name = "c", .module = translate_c.createModule() },
         },
     });
     module.linkLibrary(bdwgc.artifact("gc"));
