@@ -39,6 +39,7 @@ jobs:
           path: zig-out/docs
 
   deploy-docs:
+    if: github.ref == 'refs/heads/main'
     needs: [build-docs]
     runs-on: ubuntu-latest
     permissions:
