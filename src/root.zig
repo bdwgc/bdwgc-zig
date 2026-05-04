@@ -68,9 +68,8 @@ pub fn memalign(alignment: std.mem.Alignment, size_in_bytes: usize) error{OutOfM
     return c.GC_memalign(alignment.toByteUnits(), size_in_bytes) orelse return error.OutOfMemory;
 }
 
-pub fn base(ptr: *const anyopaque) ?*anyopaque {
-    // TODO: Fix const-correctness in the C API
-    return c.GC_base(@constCast(ptr));
+pub fn base(ptr: *anyopaque) ?*anyopaque {
+    return c.GC_base(ptr);
 }
 
 pub fn isHeapPointer(ptr: *const anyopaque) bool {
