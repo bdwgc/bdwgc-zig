@@ -86,7 +86,7 @@ pub const HeapSize = enum(usize) {
 };
 
 pub fn setMaxHeapSize(heap_size: HeapSize) void {
-    c.GC_set_max_heap_size(@intFromEnum(heap_size));
+    c.GC_set_max_heap_size(@backingInt(heap_size));
 }
 
 pub fn gcollect() void {
@@ -339,7 +339,7 @@ test setMaxHeapSize {
     init();
     disableWarnings();
     // Needs to be bigger than the current heap size
-    setMaxHeapSize(@enumFromInt(100_000));
+    setMaxHeapSize(@fromBackingInt(100_000));
     defer setMaxHeapSize(.unbounded);
     try std.testing.expectError(error.OutOfMemory, malloc(1_000_000));
 }

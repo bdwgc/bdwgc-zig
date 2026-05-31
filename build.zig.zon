@@ -2,11 +2,11 @@
     .name = .bdwgc_zig,
     .version = "0.1.0",
     .fingerprint = 0x8f7019708104f77d, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.16.0",
+    .minimum_zig_version = "0.17.0",
     .dependencies = .{
         .bdwgc = .{
-            .url = "git+https://github.com/bdwgc/bdwgc#af6f40bf3ce6ea916d487e10eee9dd4691ed4a07",
-            .hash = "bdwgc-8.3.0-8obE-Ky9LwD3G-0Hn12vdf3OhUGaCJxSUSlVxn-ScMJC",
+            .url = "git+https://github.com/linusg/bdwgc#47b80a65e4918cd79cc82c9036c019a8da10cc08",
+            .hash = "bdwgc-8.3.0-8obE-FkZMACJa4iki8fvglV3-yPVIjWpQvWBBDKQOVpv",
         },
     },
     .paths = .{

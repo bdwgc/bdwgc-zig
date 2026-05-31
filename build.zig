@@ -79,9 +79,9 @@ pub fn build(b: *std.Build) void {
     });
 
     // Ensure options declared above stay in sync with bdwgc's build.zig
-    for (bdwgc.builder.available_options_list.items) |option| {
-        if (!b.available_options_map.contains(option.name)) {
-            std.debug.panic("Option missing: {s}", .{option.name});
+    for (bdwgc.builder.available_options_map.keys()) |name| {
+        if (!b.available_options_map.contains(name)) {
+            std.debug.panic("Option missing: {s}", .{name});
         }
     }
 
