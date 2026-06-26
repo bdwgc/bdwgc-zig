@@ -120,7 +120,7 @@ fn alloc(
 fn resize(
     _: *anyopaque,
     memory: []u8,
-    alignment: std.mem.Alignment,
+    _: std.mem.Alignment,
     new_len: usize,
     return_address: usize,
 ) bool {
@@ -129,16 +129,9 @@ fn resize(
     if (new_len <= memory.len) {
         return true;
     }
-    const usable_len: usize = switch (allocStrat(alignment)) {
-        .raw => c.GC_size(memory.ptr),
-        .manual_align => usable_len: {
-            const unaligned_ptr = manualAlignHeader(memory.ptr).*;
-            const full_len = c.GC_size(unaligned_ptr);
-            const padding = @intFromPtr(memory.ptr) - @intFromPtr(unaligned_ptr);
-            break :usable_len full_len - padding;
-        },
-    };
-    return new_len <= usable_len;
+    // NOTE: We don't use GC_size() to determine the size of the allocation as
+    //       bdwgc does not track pointers beyond the explicitly allocated size.
+    return false;
 }
 
 fn remap(
