@@ -7,7 +7,7 @@ pub fn build(b: *std.Build) void {
     // Copied from https://github.com/bdwgc/bdwgc/blob/master/build.zig
     const default_enable_threads = !target.result.cpu.arch.isWasm();
     const enable_cplusplus = b.option(bool, "enable_cplusplus", "C++ support") orelse false;
-    const linkage = b.option(std.builtin.LinkMode, "linkage", "Build shared libraries (otherwise static ones)") orelse .dynamic;
+    const linkage = b.option(std.lang.LinkMode, "linkage", "Build shared libraries (otherwise static ones)") orelse .dynamic;
     const build_cord = b.option(bool, "build_cord", "Build cord library") orelse true;
     const cflags_extra = b.option([]const u8, "CFLAGS_EXTRA", "Extra user-defined cflags") orelse "";
     const enable_threads = b.option(bool, "enable_threads", "Support threads") orelse default_enable_threads;
@@ -79,9 +79,9 @@ pub fn build(b: *std.Build) void {
     });
 
     // Ensure options declared above stay in sync with bdwgc's build.zig
-    for (bdwgc.builder.available_options_list.items) |option| {
-        if (!b.available_options_map.contains(option.name)) {
-            std.debug.panic("Option missing: {s}", .{option.name});
+    for (bdwgc.builder.available_options_map.keys()) |name| {
+        if (!b.available_options_map.contains(name)) {
+            std.debug.panic("Option missing: {s}", .{name});
         }
     }
 
