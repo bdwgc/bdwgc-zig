@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .bdwgc = .{
-            .url = "git+https://github.com/bdwgc/bdwgc#af6f40bf3ce6ea916d487e10eee9dd4691ed4a07",
-            .hash = "bdwgc-8.3.0-8obE-Ky9LwD3G-0Hn12vdf3OhUGaCJxSUSlVxn-ScMJC",
+            .url = "git+https://github.com/bdwgc/bdwgc#e50d792d8abfcd5092eb16113ffb618e913c890b",
+            .hash = "bdwgc-8.3.0-8obE-KszMAC-4jrABkoMKEeiTEwdVMSidw1_KvYVMDWt",
         },
     },
     .paths = .{
