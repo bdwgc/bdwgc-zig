@@ -8,6 +8,10 @@
             .url = "git+https://github.com/bdwgc/bdwgc#635112baf95fe862e379ed4b77e06db72472ea2f",
             .hash = "bdwgc-8.3.0-8obE-M8rMAALvGehRlqR0N4PeYIhmqxzjdj0_5nfCJJ5",
         },
+        .translate_c = .{
+            .url = "git+https://codeberg.org/ziglang/translate-c?ref=2.0.0#0da7a16c3235b935b82421646076e0657cda21f6",
+            .hash = "translate_c-2.0.0-Q_BUWltOBwA0229IE8wwSxxGzOxyRso3hvcb1nN8oJX_",
+        },
     },
     .paths = .{
         "build.zig",
