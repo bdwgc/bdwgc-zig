@@ -1,5 +1,7 @@
 const std = @import("std");
 
+const Translator = @import("translate_c").Translator;
+
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -85,12 +87,14 @@ pub fn build(b: *std.Build) void {
         }
     }
 
-    const translate_c = b.addTranslateC(.{
-        .root_source_file = b.path("src/c.h"),
+    const translate_c = b.dependency("translate_c", .{});
+
+    const t: Translator = .init(translate_c, .{
+        .c_source_file = b.path("src/c.h"),
         .target = target,
         .optimize = optimize,
     });
-    translate_c.addIncludePath(bdwgc.path("include"));
+    t.linkLibrary(bdwgc.artifact("gc"));
 
     const options = b.addOptions();
     options.addOption(bool, "enable_atomic_uncollectable", enable_atomic_uncollectable);
@@ -102,10 +106,9 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
         .imports = &.{
             .{ .name = "build_options", .module = options.createModule() },
-            .{ .name = "c", .module = translate_c.createModule() },
+            .{ .name = "c", .module = t.mod },
         },
     });
-    module.linkLibrary(bdwgc.artifact("gc"));
 
     const tests = b.addTest(.{
         .root_module = module,
