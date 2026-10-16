@@ -57,11 +57,11 @@ pub fn free(ptr: *anyopaque) void {
 }
 
 pub fn strdup(str: [*:0]const u8) error{OutOfMemory}![*:0]u8 {
-    return c.GC_strdup(str) orelse return error.OutOfMemory;
+    return @ptrCast(c.GC_strdup(@ptrCast(str)) orelse return error.OutOfMemory);
 }
 
 pub fn strndup(str: [*:0]const u8, len: usize) error{OutOfMemory}![*:0]u8 {
-    return c.GC_strndup(str, len) orelse return error.OutOfMemory;
+    return @ptrCast(c.GC_strndup(@ptrCast(str), len) orelse return error.OutOfMemory);
 }
 
 pub fn memalign(alignment: std.mem.Alignment, size_in_bytes: usize) error{OutOfMemory}!*anyopaque {

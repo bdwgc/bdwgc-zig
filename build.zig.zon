@@ -5,12 +5,12 @@
     .minimum_zig_version = "0.17.0",
     .dependencies = .{
         .bdwgc = .{
-            .url = "git+https://github.com/bdwgc/bdwgc#635112baf95fe862e379ed4b77e06db72472ea2f",
-            .hash = "bdwgc-8.3.0-8obE-M8rMAALvGehRlqR0N4PeYIhmqxzjdj0_5nfCJJ5",
+            .url = "git+https://github.com/bdwgc/bdwgc#a2cb16122afd8920c19187580c1c6cfd87e58f25",
+            .hash = "bdwgc-8.3.0-8obE-ACeMACoKhucZfYGBMBXQ2MdigDs5PEtLtPiY0Uc",
         },
         .translate_c = .{
-            .url = "git+https://codeberg.org/ziglang/translate-c?ref=2.0.0#0da7a16c3235b935b82421646076e0657cda21f6",
-            .hash = "translate_c-2.0.0-Q_BUWltOBwA0229IE8wwSxxGzOxyRso3hvcb1nN8oJX_",
+            .url = "git+https://codeberg.org/ziglang/translate-c#f200bb1d0ea9228061d79cde53f46c045cd5c772",
+            .hash = "translate_c-0.1.0-dev-Q_BUWrZkBwDAivD2kWX9knhl453C0LZBZi8gP2X-gCHB",
         },
     },
     .paths = .{
